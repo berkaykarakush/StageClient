@@ -1,7 +1,18 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'src/features/home/home.dart';
 
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
+
 void main() {
+  HttpOverrides.global = MyHttpOverrides();
   runApp(const MyApp());
 }
 
@@ -13,8 +24,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: "Stage",
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange), useMaterial3: true),
-      home: const HomeScreen(),
+      theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
+          useMaterial3: true),
+      home: HomeScreen(),
     );
   }
 }
