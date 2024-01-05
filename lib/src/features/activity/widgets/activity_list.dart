@@ -1,67 +1,77 @@
 import 'package:flutter/material.dart';
-import 'package:stageclient/src/common/custom_shapes/containers/rounded_container.dart';
+import '../../../DTOs/Activity/Activity.dart';
+import '../../../services/StageAPI/StageAPI.dart';
+import 'activity_details.dart';
+import 'single_activity.dart';
 
-class TActivityListItems extends StatelessWidget {
-  const TActivityListItems({super.key});
+class TActivityListItems extends StatefulWidget {
+  const TActivityListItems({Key? key}) : super(key: key);
+
+  @override
+  _TActivityListItemsState createState() => _TActivityListItemsState();
+}
+
+class _TActivityListItemsState extends State<TActivityListItems> {
+  late List<Activity> activities;
+  late int pageNumber;
+
+  @override
+  void initState() {
+    super.initState();
+    activities = [];
+    pageNumber = 1;
+    _loadActivities();
+  }
+
+  Future<void> _loadActivities() async {
+    try {
+      List<Activity> newActivities =
+          await StageAPI.getAllActivities(pageNumber.toString(), 10.toString());
+
+      setState(() {
+        activities.addAll(newActivities);
+        pageNumber++;
+      });
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      shrinkWrap: true,
-      separatorBuilder: (_,__) => const SizedBox(height: 8.0,),
-      itemCount: 10,
-      itemBuilder: (_, index) => TRoundedContainer(
-        showBorder: true,
-        backgroundColor: Colors.white,
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            /// Row 1
-            Row(
-              children: [
-                /// Icons
-                const Icon(Icons.local_shipping_outlined),
-                const SizedBox(width: 8.0,),
-                /// Status, Date
-                Expanded(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Bekleniyor", style: Theme.of(context).textTheme.bodyLarge!.apply(color: Colors.red, fontWeightDelta: 1),)
-                      ],
-                    )
-                ),
-                /// Icon
-                IconButton(onPressed: (){}, icon: const Icon(Icons.arrow_forward, size: 16.0,)),
-              ],
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.separated(
+            shrinkWrap: true,
+            separatorBuilder: (_, __) => const SizedBox(height: 8.0),
+            itemCount: activities.length,
+            itemBuilder: (_, index) => GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        ActivityDetails(activity: activities[index]),
+                  ),
+                );
+              },
+              child: TSingleActivity(activity: activities[index]),
             ),
-            SizedBox(height: 16.0,),
-            /// Row 2
-            Row(
-              children: [
-                /// Icons
-                const Icon(Icons.local_shipping_outlined),
-                const SizedBox(width: 8.0,),
-                /// Status, Date
-                Expanded(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Bekleniyor", style: Theme.of(context).textTheme.bodyLarge!.apply(color: Colors.red, fontWeightDelta: 1),)
-                      ],
-                    )
-                ),
-                /// Icon
-                IconButton(onPressed: (){}, icon: const Icon(Icons.arrow_forward, size: 16.0,)),
-              ],
-            ),
-            SizedBox(height: 16.0,),
-          ],
+          ),
         ),
-      ),
+        ElevatedButton(
+          onPressed: _loadActivities,
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.orangeAccent),
+          child: Text(
+            'Load More',
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 14.0,
+                fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
     );
   }
 }

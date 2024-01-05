@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-
+import '../../../DTOs/Activity/Activity.dart';
 import '../../../common/custom_shapes/containers/rounded_container.dart';
 
 class TSingleActivity extends StatelessWidget {
   const TSingleActivity({
     super.key,
+    required this.activity,
   });
+
+  final Activity activity;
 
   @override
   Widget build(BuildContext context) {
@@ -20,19 +23,22 @@ class TSingleActivity extends StatelessWidget {
           Row(
             children: [
               /// Icons
-              const Icon(Icons.tag, size: 16.0,),
+              const Icon(
+                Icons.tag,
+                size: 16.0,
+              ),
               const SizedBox(
                 width: 8.0,
               ),
 
-              /// Status, Date
+              /// Title, Date
               Expanded(
                   child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Past Activity 1",
+                    activity.title,
                     style: Theme.of(context)
                         .textTheme
                         .bodyLarge!
@@ -46,7 +52,7 @@ class TSingleActivity extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    "11/10/2023",
+                    activity.date,
                     style: Theme.of(context)
                         .textTheme
                         .bodyLarge!
@@ -63,14 +69,14 @@ class TSingleActivity extends StatelessWidget {
           /// Row 2
           Row(
             children: [
-              /// Status, Date
+              /// Description
               Expanded(
                   child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Activity 2 months ago",
+                    activity.description,
                     style: Theme.of(context)
                         .textTheme
                         .bodyMedium!
